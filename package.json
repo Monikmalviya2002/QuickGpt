@@ -1,0 +1,21 @@
+{
+  "name": "quickgpt",
+  "version": "1.0.0",
+   "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "author": "monik malviya",
+  "license": "ISC",
+  "description": "Quick GPT Project",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.18.0",
+    "nodemon": "^3.0.0",
+    "openai": "^5.16.0"
+  }
+}
