@@ -1,23 +1,9 @@
 import express from "express";
 import Thread from "../models/thread.js";
+import openAIResponse from "../utills/openai.js";
 
 
 const router = express.Router();
-
-router.post("/test", async (req, res) => {
-  try {
-    const thread = new Thread({
-      threadId: "abc",
-      title: "testing new thread",
-    });
-
-    const response = await thread.save(); 
-    res.status(201).json(response); 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "failed to save in DB" });
-  }
-});
 
 
 //to get all the thread
@@ -66,4 +52,35 @@ router.post("/test", async (req, res) => {
           }
     });
 
-export default router;
+
+       router.post("/chat" , async(req,res)=>{
+            const{threadId,message} = req.body;
+            if(!threadId || !message){
+                res.status(400).json({err: "missing required fields"})
+            }
+
+            try{
+             const thread =  await Thread.findOne({threadId});
+             if(!thread){
+                 thread = new Thread({
+                    threadId,
+                    title : message,
+                    message:[{role : " user"  , content: "message"}]
+                 })
+             } else{
+                thread.messages.push({role : "user"  , content: "message"});
+             };
+                const assistantReply = await openAIResponse(message);
+                thread.messages.push({role : "assistant"  , content: assistantReply});
+
+                await thread.save();
+              res.json({ reply: assistantReply.trim() });
+
+            }catch(err){
+              console.log(err);
+              res.status(500).json({error: "something went wrong"});
+            }
+       });
+
+
+     export default router;

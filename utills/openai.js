@@ -1,4 +1,6 @@
 import "dotenv/config";
+
+
  const API_KEY=process.env.API_KEY;
 
  const openAIResponse = async(messsage)=>{
@@ -12,7 +14,7 @@ import "dotenv/config";
       body: JSON.stringify({
         contents: [
           {
-            parts: [{ text:"currency of poland" }],
+            parts: [{ text:messsage }],
           },
         ],
       }),
@@ -22,10 +24,9 @@ import "dotenv/config";
   const data = await response.json();
 
      return data.candidates[0].content.parts[0].text;
-
    
 }
 
-run();
+
 
  export default openAIResponse;
