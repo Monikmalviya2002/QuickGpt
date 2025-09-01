@@ -1,27 +1,30 @@
+import express from "express"; 
+import cors from "cors";
 import "dotenv/config";
- const API_KEY=process.env.API_KEY;
+import connectDB from "./config/database.js";
+
+const app = express();
 
 
-async function run() {
-  const response = await fetch(
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + API_KEY,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: "the capital of india" }],
-          },
-        ],
-      }),
-    }
-  );
+const corsOptions = {
+  origin: "http://localhost:5173",
+  credentials: true,
 
-  const data = await response.json();
-  console.log(JSON.stringify(data, null, 2));
-}
+};
+app.use(cors(corsOptions));
+app.use(express.json());
 
-run();
+
+connectDB()
+.then(()=>{
+    console.log("✅ DATABASE connection is succesfull");
+
+
+app.listen(7777,()=>{
+    console.log("✅ server is active");
+})
+})
+
+.catch(()=>{
+    console.log("❌DATABASE connection is failed");
+})
