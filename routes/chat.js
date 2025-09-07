@@ -19,8 +19,8 @@ const router = express.Router();
  });
 
   // to get particular thread 
-    router.get("thread/:threadId" , async(req,res)=>{
-          const threadId = req.params;
+    router.get("/thread/:threadId" , async(req,res)=>{
+           const { threadId } = req.params;
           try{
              const thread =   await Thread.findOne({threadId});
               if(!thread){
@@ -36,11 +36,11 @@ const router = express.Router();
     });
 
     //to delete particular thread;
-     router.delete("thread/:threadId" , async(req,res)=>{
-          const threadId = req.params;
+     router.delete("/thread/:threadId" , async(req,res)=>{
+          const {threadId} = req.params;
           try{
-             const deletedthread =   await Thread.findOnebyId({threadId});
-              if(!deletedthread){
+             const deletedThread = await Thread.findOneAndDelete({ threadId });
+              if(!deletedThread){
                 res.status(404).json({error: "Thread not found"})
               }
 
@@ -60,18 +60,18 @@ const router = express.Router();
             }
 
             try{
-             const thread =  await Thread.findOne({threadId});
+             let thread =  await Thread.findOne({threadId});
              if(!thread){
                  thread = new Thread({
                     threadId,
                     title : message,
-                    message:[{role : " user"  , content: "message"}]
+                    messages: [{ role: "user", content: message }],
                  })
              } else{
-                thread.messages.push({role : "user"  , content: "message"});
+                thread.messages.push({role: "user"  , content: message});
              };
                 const assistantReply = await openAIResponse(message);
-                thread.messages.push({role : "assistant"  , content: assistantReply});
+                thread.messages.push({role: "assistant"  , content: assistantReply});
 
                 await thread.save();
               res.json({ reply: assistantReply.trim() });
